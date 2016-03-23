@@ -43,6 +43,7 @@ export node_consul=consul.service.consul
 for node in ${nodelist[@]} ; do
     export node_private_ip=$(slcli vs detail ${node} | grep private_ip | awk '{print $2}')
     export node_public_ip=$(slcli vs detail ${node} | grep public_ip | awk '{print $2}')
+    export node_ssh_ip=$(slcli vs detail ${node} | grep ${sl_ssh_interface}_ip | awk '{print $2}')
 
     echo
     echo "-------------------------------------------------" 
@@ -57,7 +58,7 @@ for node in ${nodelist[@]} ; do
 
     docker-machine ${machine_opts} create \
     --driver generic \
-    --generic-ip-address ${node_private_ip} \
+    --generic-ip-address ${node_ssh_ip} \
     --generic-ssh-key ${__root}/ssh/swarm.rsa \
     --generic-ssh-user root \
     --engine-storage-driver btrfs \
