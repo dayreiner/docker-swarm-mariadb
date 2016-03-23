@@ -1,0 +1,24 @@
+consul:
+  command: -dc ${datacenter} -server -node ${node} -client 0.0.0.0 -bootstrap-expect ${swarm_total_nodes} -advertise ${node_cluster_ip} -retry-interval 10s -recursor ${dns_primary} -recursor ${dns_secondary} -retry-join ${othernode0_cluster_ip} -retry-join ${othernode1_cluster_ip}
+  container_name: consul
+  net: host
+  environment:
+  - "GOMAXPROCS=2"
+  image: gliderlabs/consul-server:latest
+  ports:
+  - 172.17.0.1:53:53
+  - 172.17.0.1:53:53/udp
+  - ${node_cluster_ip}:53:53
+  - ${node_cluster_ip}:53:53/udp
+  - ${node_cluster_ip}:8300-8302:8300-8302
+  - ${node_cluster_ip}:8300-8302:8300-8302/udp
+  - ${node_cluster_ip}:8400:8400
+  - ${node_cluster_ip}:8500:8500
+  restart: always
+  volumes:
+  - "consul-data:/data"
+  - "/etc/consul/consul.json:/config/consul.json:ro"
+  - "/etc/docker/ca.pem:/certs/ca.pem:ro"
+  - "/etc/docker/server.pem:/certs/server.pem:ro"
+  - "/etc/docker/server-key.pem:/certs/server-key.pem:ro"
+  - "/var/run/docker.sock:/var/run/docker.sock"

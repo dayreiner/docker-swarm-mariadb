@@ -1,0 +1,31 @@
+version: '2'
+services:
+  %%DBNODE%%:
+    image: dayreiner/centos7-mariadb-10.1-galera
+    container_name: %%DBNODE%%
+    hostname: %%DBNODE%%
+    restart: always
+    networks:
+     - mariadb
+    ports:
+     - 172.17.0.1:3306:3306
+    expose:
+     - "3306"
+     - "4567"
+     - "4444"
+    volumes:
+     - ${mariadb_data_path}:/var/lib/mysql
+    env_file:
+     - common.env
+    environment:
+     # This is set by the build script
+     - CLUSTER=${cluster_members}
+     # These are configured in swarm.conf
+     - CLUSTER_NAME=${mariadb_cluster_name}
+     - MYSQL_ROOT_PASSWORD=${mysql_root_password}
+     - SST_USER=sst
+     - SST_PASS=${sst_pass}
+networks:
+  mariadb:
+   external:
+    name: mariadb
