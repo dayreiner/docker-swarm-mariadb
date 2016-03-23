@@ -105,11 +105,12 @@ echo "Provisioning ${#nodelist[@]} nodes: ${nodelist[@]}"
 echo
 [[ ! -f /usr/bin/expect ]] && echo "Please install expect to continue..." && exit 1
 for node in ${nodelist[@]} ; do
+    echo
     echo "Ordering ${node}..."
     /usr/bin/expect <<- EOF
 	set force_conservative 0
 	set timeout 10
-	spawn slcli vs create \
+	spawn slcli vs create ${sl_extra_args} \
 	-H ${node} -D ${sl_domain} -c ${sl_cpu} -m ${sl_memory} \
 	-d ${sl_region} -o CENTOS_LATEST --billing ${sl_billing} \
 	--public ${sl_disk_type} -k $(slcli sshkey list | grep ${sl_sshkey_name} | awk '{print $1}') \
@@ -119,7 +120,8 @@ for node in ${nodelist[@]} ; do
 	send "Y\r"
 	expect eof
 	EOF
-    echo "Ordering for ${node} complete!"
+    echo "########## Ordering for ${node} complete!"
+    echo
 done
 
 echo
@@ -127,28 +129,31 @@ echo "Swarm nodes ordered in softlayer. Waiting for provisioning to complete..."
 echo
 
 for node in ${nodelist[@]} ; do
-    provision_state="waiting"
-    while [[ ${provision_state} = "waiting" ]]; do
-        provision_status=$(slcli vs detail ${node} | grep status | awk '{print $2}')
-        if [[ $provision_status != "ACTIVE" ]]; then
-            echo "Provisioning in progress. Status is ${provision_status}. Will check again in 1 minute..."
-            sleep 60
-        else
-            state=$provision_status
-            echo "Provisioning of ${node} completed. Running post-provision script." 
-        fi
+    provision_state=$(slcli vs detail ${node} | grep state | awk '{print $2}')
+    while [[ "${provision_state}" != "RUNNING" ]]; do
+        provision_state=$(slcli vs detail ${node} | grep state | awk '{print $2}')
+        echo "Provisioning in progress. State is ${provision_state}. Will check again in 1 minute..."
+        sleep 60
     done
-    node_ssh_ip=$(slcli vs detail ${node} | grep ${sl_ssh_interface}_ip | awk '{print $2}')
     echo
-    scp ${__root}/scripts/provisioning/sl_post_provision.sh root@${node_ssh_ip}:/tmp
-    ssh root@${node_ssh_ip} "chmod +x /tmp/sl_post_provision.sh"
-    ssh root@${node_ssh_ip} "/tmp/sl_post_provision.sh"
+    echo "########## Provisioning of ${node} completed. Running post-provision script." 
+    echo
+    node_ssh_ip=$(slcli vs detail ${node} | grep ${sl_ssh_interface}_ip | awk '{print $2}')
+    known_hosts_file="${__root}/ssh/known_hosts"
+    ssh-keyscan -H ${node_ssh_ip} >> ${known_hosts_file}
+    ssh_opts=( -o StrictHostKeyChecking=no -o UserKnownHostsFile=${known_hosts_file} )
+    scp ${ssh_opts[@]} ${__root}/scripts/provisioning/sl_post_provision.sh root@${node_ssh_ip}:/tmp
+    ssh ${ssh_opts[@]} root@${node_ssh_ip} "chmod +x /tmp/${node}-docker-prep.sh"
+    ssh ${ssh_opts[@]} root@${node_ssh_ip} "/tmp/${node}-docker-prep.sh"
+    echo
+    echo "########## Post-provision script on ${node} completed!"
+    echo
 done
 
 echo "########################################################"
 echo "#         SWARM INSTANCE PROVISIONING COMPLETE         #"
 echo "########################################################"
 echo
-echo "You can now run build_cluster.sh to build the docker swarm
+echo "You can now run build_cluster.sh to build the docker swarm"
 echo "cluster on the provisioned instances"
 echo
