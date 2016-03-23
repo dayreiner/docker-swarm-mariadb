@@ -39,7 +39,7 @@ export MACHINE_STORAGE_PATH="${__root}/machine"
 # Check for slcli
 [[ ! $(which slcli 2>/dev/null) ]] && echo "slcli tool required. Make sure slcli is configured and in your path" && exit 1
 
-# Build cluster members with docker machine
+# Order swarm instances using slcli
 
 # Get per-node cost
 export node=${nodelist[0]}
@@ -138,10 +138,11 @@ for node in ${nodelist[@]} ; do
             echo "Provisioning of ${node} completed. Running post-provision script." 
         fi
     done
+    node_ssh_ip=$(slcli vs detail ${node} | grep ${sl_ssh_interface}_ip | awk '{print $2}')
     echo
-    docker-machine scp ${__root}/scripts/provisioning/sl_post_provision.sh ${node}:/tmp
-    docker-machine ssh ${node} "chmod +x /tmp/sl_post_provision.sh"
-    docker-machine ssh ${node} "/tmp/sl_post_provision.sh"
+    scp ${__root}/scripts/provisioning/sl_post_provision.sh root@${node_ssh_ip}:/tmp
+    ssh root@${node_ssh_ip} "chmod +x /tmp/sl_post_provision.sh"
+    ssh root@${node_ssh_ip} "/tmp/sl_post_provision.sh"
 done
 
 echo "########################################################"
