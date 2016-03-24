@@ -28,6 +28,8 @@ fi
 # Set machine storage to machine subdir of repo
 export MACHINE_STORAGE_PATH="${__root}/machine"
 
+export nodelist=( $(docker-machine ls -q) )
+
 for node in ${nodelist[@]} ; do
  docker-machine scp ${__root}/scripts/instance/cleanup_generic.sh ${node}:/tmp
  docker-machine ssh ${node} "chmod +x /tmp/cleanup_generic.sh"
