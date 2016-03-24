@@ -158,6 +158,6 @@ echo "########################################################"
 echo "#         SWARM INSTANCE PROVISIONING COMPLETE         #"
 echo "########################################################"
 echo
-echo "You can now run build_cluster.sh to build the docker swarm"
+echo "You can now run build_swarm.sh to build the docker swarm"
 echo "cluster on the provisioned instances"
 echo
