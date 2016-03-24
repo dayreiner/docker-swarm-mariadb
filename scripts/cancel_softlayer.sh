@@ -96,4 +96,5 @@ for node in ${nodelist[@]} ; do
     echo
 done
 
-echo "
+echo "All nodes complete!"
+echo "All nodes cancelled. Check ${wh}slcli vs list${nor} for cancellation status before reprovisioning"
