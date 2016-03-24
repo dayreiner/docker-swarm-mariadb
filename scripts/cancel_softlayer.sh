@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #############################################################################
-# Provision configured instances in the public cloud in IBM Softlayer
+# Cancel configured instances in the public cloud in IBM Softlayer
 #############################################################################
 
 #set -o xtrace # uncomment for debug
@@ -69,8 +69,20 @@ esac
 
 [[ ! -f /usr/bin/expect ]] && echo "Please install expect to continue..." && exit 1
 for node in ${nodelist[@]} ; do
+    # Check if node is still in docker-machine and remove it before we cancel
+    echo "Checking for ${node} in docker-machine..."
+    echo
+    if [[ $(docker-machine ip ${node}) ]] ; then
+        echo "########## Found ${node} in machine list, removing it."
+        docker-machine rm -f -y ${node}
+        echo "########## ${node} removed from docker machine list."
+    else
+        echo "########## Node ${node} not found in machine list, skipping straight to softlayer cancellation..."
+        echo
+    fi
+
     # Try to avoid collateral damage. Abort if we get anything other than a single hit.
-    export check_instance="$(slcli vs list | grep ${node} || true)"
+    export check_instance="$(slcli vs list | grep ${node} || true)" # Strictmode workaround
     export uniq_check=$(echo ${check_instance} | wc -l)
     if [[ ${uniq_check} = 0 ]] ; then
         echo "Match for ${node} not found. Exiting"
@@ -83,8 +95,7 @@ for node in ${nodelist[@]} ; do
     fi
     # OK to go...
     node_id=$(slcli vs list | grep ${node} | awk '{print $1}')
-    echo
-    echo "Cancelling ${node}..."
+    echo "########## Cancelling ${node}..."
     /usr/bin/expect <<- EOF
 	set force_conservative 0
 	set timeout 10
