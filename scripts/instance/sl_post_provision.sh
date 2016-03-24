@@ -12,8 +12,12 @@ set -euo pipefail
 
 exec 1> >(logger -s -t $(basename $0)) 2>&1
 
+# Install btrfs/lvm requirements plus git and
+# net-tools to provide netstat command
+# per https://github.com/docker/machine/issues/2480
+# Otherwise generic provisioning fails with SSH exit 127 error
 yum -y update && yum clean all && yum makecache fast
-yum -y install lvm2 lvm2-libs btrfs-progs git
+yum -y install lvm2 lvm2-libs btrfs-progs git net-tools
 
 echo "Setup xvdc partition layout for docker"
     cat << EOF > /tmp/xvdc.layout

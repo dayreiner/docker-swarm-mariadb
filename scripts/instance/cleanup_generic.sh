@@ -8,6 +8,8 @@
 # Run on docker-machine $node before performing docker-machine rm $node
 # Node can then be reprovisioned using machine without crapping out.
 
+exec 1> >(logger -s -t $(basename $0)) 2>&1
+
 # Stop Docker
 systemctl stop docker
 

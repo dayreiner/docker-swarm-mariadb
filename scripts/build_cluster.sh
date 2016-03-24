@@ -6,7 +6,7 @@
 # and pre-existing CentOS 7 nodes in Softlayer.
 #############################################################################
 
-set -o xtrace # uncomment for debug
+#set -o xtrace # uncomment for debug
 
 #############################################################################
 # Nothing to set past here
