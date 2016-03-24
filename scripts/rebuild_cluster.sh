@@ -1,11 +1,10 @@
 #!/bin/bash
+#set -o xtrace 
 
-#set -o xtrace # uncomment for debug
+set -euo pipefail
 
-# Strict modes. Same as -euo pipefail
-set -o errexit
-set -o pipefail
-set -o nounset
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" 
 
+cd ${__dir}
 ./destroy_cluster.sh
 ./build_cluster.sh

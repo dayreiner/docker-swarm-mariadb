@@ -29,7 +29,7 @@ fi
 export MACHINE_STORAGE_PATH="${__root}/machine"
 
 for node in ${nodelist[@]} ; do
- docker-machine scp ${__root}/scripts/provisioning/cleanup_generic.sh ${node}:/tmp
+ docker-machine scp ${__root}/scripts/instance/cleanup_generic.sh ${node}:/tmp
  docker-machine ssh ${node} "chmod +x /tmp/cleanup_generic.sh"
  docker-machine ssh ${node} "/tmp/cleanup_generic.sh"
  docker-machine rm -f -y ${node}
