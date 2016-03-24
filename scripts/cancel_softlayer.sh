@@ -70,7 +70,8 @@ esac
 [[ ! -f /usr/bin/expect ]] && echo "Please install expect to continue..." && exit 1
 for node in ${nodelist[@]} ; do
     # Try to avoid collateral damage. Abort if we get anything other than a single hit.
-    export uniq_check=$(slcli vs list | grep ${node} || true | wc -l)
+    export check_instance="$(slcli vs list | grep ${node} || true)"
+    export uniq_check=$(echo ${check_instance} | wc -l)
     if [[ ${uniq_check} = 0 ]] ; then
         echo "Match for ${node} not found. Exiting"
         exit 1
