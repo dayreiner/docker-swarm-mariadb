@@ -6,7 +6,7 @@
 # and pre-existing CentOS 7 nodes in Softlayer.
 #############################################################################
 
-#set -o xtrace # uncomment for debug
+set -o xtrace # uncomment for debug
 
 #############################################################################
 # Nothing to set past here
@@ -40,6 +40,7 @@ export MACHINE_STORAGE_PATH="${__root}/machine"
 
 # Get our list of nodes from docker machine
 export nodelist=( $(docker-machine ls -q) )
+export node=${nodelist[0]}
 eval $(docker-machine env ${node})
 
 # Create our overlay network if it doesn't already exist

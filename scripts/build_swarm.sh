@@ -76,10 +76,7 @@ for node in ${nodelist[@]} ; do
     --engine-opt="log-opt max-size=10m" \
     --engine-opt="dns-search=${dns_search_domain}" \
     --engine-label="dc=${datacenter}" \
-    --engine-label="type=public_cloud" \
-    --engine-label="disk=san" \
-    --engine-label="client=internal" \
-    --engine-label="environment=development" \
+    --engine-label="instance_type=public_cloud" \
     --tls-san ${node} \
     --tls-san ${node_private_ip} \
     --tls-san ${node_public_ip} \

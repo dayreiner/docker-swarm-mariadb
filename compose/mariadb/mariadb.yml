@@ -24,7 +24,7 @@ services:
      - CLUSTER_NAME=${mariadb_cluster_name}
      - MYSQL_ROOT_PASSWORD=${mysql_root_password}
      - SST_USER=sst
-     - SST_PASS=${sst_pass}
+     - SST_PASS=${sst_password}
 networks:
   mariadb:
    external:
