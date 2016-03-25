@@ -15,6 +15,8 @@ Some scripts for an upcoming [blog](http://18pct.com/blog) article. Will documen
 Tested from CentOS 7. Requires the Softlayer "[slcli](https://github.com/softlayer/softlayer-python)" command-line api client tool (`pip install softlayer`) and expect (`yum -y install expect`) if not already present on the system you're running these from. 
 Otherwise, look through the scripts to get an idea of the process. 
 
+## Steps
+
 - `cd config ; cp swarm.conf swarm.local`
 - `vi swarm.local` and change values for your nodes and environment
 - `cd ../scripts`
