@@ -17,19 +17,22 @@ Otherwise, look through the scripts to get an idea of the process.
 
 ## Steps
 
+- `git clone git@github.com:dayreiner/docker-swarm-mariadb.git ; cd docker-swarm-mariadb ; source source.me`
 - `cd config ; cp swarm.conf swarm.local`
 - `vi swarm.local` and change values for your nodes and environment
 - `cd ../scripts`
-- `./provision_softlayer.sh` (orders nodes, run post-provisioning scripts)
+- `./provision_softlayer.sh` (orders nodes, runs post-provisioning scripts)
 - `./build_swarm.sh` (Deploys multi-master swarm using HA consul on the swarm nodes themselves)
-- Wait for the swarm nodes to find the consul cluster and finish bootstrapping the swarm 
+- Wait for the swarm nodes to find the consul cluster and finish bootstrapping the swarm. Check with:
  - `eval $(docker-machine env --swarm sw1)`
  - `docker info` and wait for all three nodes to be listed
-- `./deploy_mariadb.sh` Bootstrap the MariaDB cluster on the swarm nodes.
+- `./deploy_mariadb.sh` Bootstrap the MariaDB cluster on the swarm nodes. Check node logs to confirm.
 - `docker exec -ti sw1-db1 bash`, run `mysql` and `show status like 'wsrep%';` to confirm the cluster is operational.
-- Also includes scripts for tearing down the swarm, rebuilding it and cancelling the swarm instances in Softlayer
+- Optionally re-run `./deploy_mariadb.sh` again to redeploy db1 as a standard galera cluster member.
 
-Zero to functional Galera Cluster across three Softlayer instances:
+Also includes scripts for tearing down the swarm, rebuilding it and cancelling the swarm instances in Softlayer
+
+#### Zero to functional Galera Cluster across three Softlayer instances:
 ```
     real    13m17.885s
     user    0m15.442s
