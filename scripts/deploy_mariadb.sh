@@ -69,7 +69,7 @@ else
         export cluster_members=${cluster_members:1}
         export node
         sed "s/%%DBNODE%%/db-${node}/g" mariadb.yml > ${node}.yml
-        docker-compose -f ${__root}/compose/mariadb/${node}.yml up -d --no-recreate
+        docker-compose -f ${__root}/compose/mariadb/${node}.yml up -d --force-recreate
     done
 fi
 
