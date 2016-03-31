@@ -64,7 +64,7 @@ else
     echo "${nodelist[0]}/db already running. Attempting to rejoin cluster as regular node..."
     for node in ${nodelist[0]} ; do
         eval $(docker-machine env ${node})
-        # Set the cluster mode to bootstrap, as we're the first one
+        # Set the cluster mode to to the current node list as we're joining as a regular node
         cluster_members=$(printf ",db-%s" "${nodelist[@]}")
         export cluster_members=${cluster_members:1}
         export node
